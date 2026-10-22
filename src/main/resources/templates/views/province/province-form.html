@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Formulario de Provincias')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="form-page">
+    <div class="form-card">
+
+        <!-- Título según creación o edición -->
+        <h1 th:text="${province.id == null} ? #{msg.province-form.add} : #{msg.province-form.edit}">
+            Formulario de Provincia
+        </h1>
+
+        <!-- Mensaje de error general -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Formulario para insertar o actualizar -->
+        <form th:action="${province.id == null} ? @{/provinces/insert} : @{/provinces/update}"
+              th:object="${province}"
+              method="post"
+              class="mt-3">
+
+            <!-- ID oculto: necesario para actualizar -->
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Código -->
+            <div class="mb-3">
+                <label for="code"
+                       class="form-label"
+                       th:text="#{msg.province-form.code}">
+                    Código
+                </label>
+
+                <input type="text"
+                       id="code"
+                       th:field="*{code}"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('code')}"
+                     th:errors="*{code}">
+                </div>
+            </div>
+
+            <!-- Nombre -->
+            <div class="mb-3">
+                <label for="name"
+                       class="form-label"
+                       th:text="#{msg.province-form.name}">
+                    Nombre
+                </label>
+
+                <input type="text"
+                       id="name"
+                       th:field="*{name}"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}">
+                </div>
+            </div>
+
+            <!-- Comunidad Autónoma -->
+            <div class="mb-3">
+                <label for="region"
+                       class="form-label"
+                       th:text="#{msg.province-form.region}">
+                    Comunidad Autónoma
+                </label>
+
+                <select id="region"
+                        th:field="*{region.id}"
+                        class="form-select"
+                        th:classappend="${#fields.hasErrors('regionSelected')} ? 'is-invalid' : ''">
+
+                    <option value=""
+                            th:text="#{msg.province-form.selectRegion}">
+                        Selecciona una Comunidad Autónoma
+                    </option>
+
+                    <option th:each="region : ${listRegions}"
+                            th:value="${region.id}"
+                            th:text="${region.name}">
+                    </option>
+                </select>
+
+                <!-- Error si no se selecciona una región -->
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('regionSelected')}"
+                     th:errors="*{regionSelected}">
+                </div>
+            </div>
+
+            <!-- Botón dinámico: Crear o Actualizar -->
+            <button type="submit"
+                    class="btn btn-primary"
+                    th:text="${province.id == null} ? #{msg.province-form.create} : #{msg.province-form.update}">
+                Crear
+            </button>
+
+            <!-- Volver al listado -->
+            <a th:href="@{/provinces}"
+               class="btn btn-secondary"
+               th:text="#{msg.province-form.returnback}">
+                Volver al listado
+            </a>
+
+        </form>
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

@@ -111,17 +111,35 @@
 
     <!-- Cambiar idioma manteniendo la página actual -->
     <script>
+
         function changeLanguage(language) {
 
-            // Obtener la URL de la página actual
+            // Obtener la URL de la página actual.
             const url = new URL(window.location.href);
 
-            // Añadir o actualizar el parámetro del idioma
+            // Si estamos insertando una región o provincia,
+            // regresar al formulario de creación.
+            if (url.pathname.endsWith("/regions/insert") ||
+                url.pathname.endsWith("/provinces/insert")) {
+
+                url.pathname = url.pathname.replace(/\/insert$/, "/new");
+            }
+
+                // Si estamos actualizando una región o provincia,
+            // regresar al listado correspondiente.
+            else if (url.pathname.endsWith("/regions/update") ||
+                url.pathname.endsWith("/provinces/update")) {
+
+                url.pathname = url.pathname.replace(/\/update$/, "");
+            }
+
+            // Cambiar el idioma sin perder los demás parámetros de la URL.
             url.searchParams.set("lang", language);
 
-            // Recargar la misma página con el idioma seleccionado
+            // Navegar a una dirección que admita GET.
             window.location.assign(url.toString());
         }
+
     </script>
 
 </header>

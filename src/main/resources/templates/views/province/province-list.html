@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Provincias')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="list-page content-wrapper">
+    <div class="list-card">
+
+        <!-- Título del listado -->
+        <h1 th:text="#{msg.province-list.title}">
+            Listado de Provincias
+        </h1>
+
+        <!-- Botón para añadir una provincia -->
+        <a th:href="@{/provinces/new}"
+           class="btn btn-success"
+           th:text="#{msg.province-list.add}">
+            Añadir nueva provincia
+        </a>
+
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Tabla de provincias -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mt-3">
+
+                <thead>
+                <tr>
+                    <th th:text="#{msg.province-list.id}">ID</th>
+                    <th th:text="#{msg.province-list.code}">Código</th>
+                    <th th:text="#{msg.province-list.name}">Nombre</th>
+                    <th th:text="#{msg.province-list.region}">
+                        Comunidad Autónoma
+                    </th>
+                    <th th:text="#{msg.province-list.actions}">
+                        Acciones
+                    </th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="province : ${listProvinces}">
+
+                    <td th:text="${province.id}"></td>
+                    <td th:text="${province.code}"></td>
+                    <td th:text="${province.name}"></td>
+
+                    <!-- Nombre de la comunidad autónoma asociada -->
+                    <td th:text="${province.region != null ? province.region.name : ''}"></td>
+
+                    <td>
+                        <!-- Editar provincia -->
+                        <a th:href="@{/provinces/edit(id=${province.id})}"
+                           class="btn btn-primary btn-sm"
+                           th:text="#{msg.province-list.edit}">
+                            Editar
+                        </a>
+
+                        <!-- Eliminar provincia -->
+                        <form th:action="@{/provinces/delete}"
+                              method="post"
+                              class="d-inline">
+
+                            <input type="hidden"
+                                   name="id"
+                                   th:value="${province.id}">
+
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    th:text="#{msg.province-list.delete}"
+                                    th:attr="onclick=|return confirm('${#messages.msg('msg.province-list.confirm')}');|">
+                                Eliminar
+                            </button>
+
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+
+            </table>
+        </div>
+
+        <!-- Volver al inicio -->
+        <a th:href="@{/}"
+           class="btn btn-secondary"
+           th:text="#{msg.province-form.returnback}">
+            Volver
+        </a>
+
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>
