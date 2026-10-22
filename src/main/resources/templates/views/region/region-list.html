@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Listado de Comunidades Autónomas')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="list-page content-wrapper">
+    <div class="list-card">
+
+        <!-- Título traducido -->
+        <h1 th:text="#{msg.region-list.title}">
+            Listado de Comunidades Autónomas
+        </h1>
+
+        <!-- Botón para crear una región -->
+        <a th:href="@{/regions/new}"
+           class="btn btn-success"
+           th:text="#{msg.region-list.add}">
+            Agregar Nueva Comunidad Autónoma
+        </a>
+
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Tabla de regiones -->
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th th:text="#{msg.region-list.id}">ID</th>
+                    <th th:text="#{msg.region-list.code}">Código</th>
+                    <th th:text="#{msg.region-list.name}">Nombre</th>
+                    <th th:text="#{msg.region-list.actions}">Acciones</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="region : ${listRegions}">
+                    <td th:text="${region.id}"></td>
+                    <td th:text="${region.code}"></td>
+                    <td th:text="${region.name}"></td>
+
+                    <td>
+                        <!-- Editar región -->
+                        <a th:href="@{/regions/edit(id=${region.id})}"
+                           class="btn btn-primary btn-sm"
+                           th:text="#{msg.region-list.edit}">
+                            Editar
+                        </a>
+
+                        <!-- Eliminar región -->
+                        <form th:action="@{/regions/delete}"
+                              method="post"
+                              class="d-inline">
+
+                            <input type="hidden"
+                                   name="id"
+                                   th:value="${region.id}">
+
+                            <button type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    th:text="#{msg.region-list.delete}"
+                                    th:attr="onclick=|return confirm('${#messages.msg('msg.region-list.confirm')}');|">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Volver al inicio -->
+        <a th:href="@{/}" class="btn btn-secondary">
+            Volver al inicio
+        </a>
+
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- JavaScript -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

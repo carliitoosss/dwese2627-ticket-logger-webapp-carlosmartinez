@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Formulario de Regiones')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="form-page">
+    <div class="form-card">
+
+        <!-- Título traducido según la operación -->
+        <h1 th:text="${region.id == null} ? #{msg.region-form.add} : #{msg.region-form.edit}">
+            Formulario de Región
+        </h1>
+
+        <!-- Mensaje de error general -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Formulario para crear o editar -->
+        <form th:action="${region.id == null} ? @{/regions/insert} : @{/regions/update}"
+              th:object="${region}"
+              method="post"
+              class="mt-3">
+
+            <!-- ID oculto -->
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Código -->
+            <div class="mb-3">
+                <label for="code"
+                       class="form-label"
+                       th:text="#{msg.region-form.code}">
+                    Código
+                </label>
+
+                <input type="text"
+                       th:field="*{code}"
+                       id="code"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <!-- Errores de validación del código -->
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('code')}"
+                     th:errors="*{code}">
+                </div>
+            </div>
+
+            <!-- Nombre -->
+            <div class="mb-3">
+                <label for="name"
+                       class="form-label"
+                       th:text="#{msg.region-form.name}">
+                    Nombre
+                </label>
+
+                <input type="text"
+                       th:field="*{name}"
+                       id="name"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <!-- Errores de validación del nombre -->
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}">
+                </div>
+            </div>
+
+            <!-- Botón traducido: crear o actualizar -->
+            <button type="submit"
+                    class="btn btn-primary"
+                    th:text="${region.id == null} ? #{msg.region-form.create} : #{msg.region-form.update}">
+                Crear
+            </button>
+
+            <!-- Volver al listado -->
+            <a th:href="@{/regions}"
+               class="btn btn-secondary"
+               th:text="#{msg.region-form.returnback}">
+                Volver al listado
+            </a>
+
+        </form>
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Formulario de Regiones')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="form-page">
+    <div class="form-card">
+
+        <!-- Título traducido según la operación -->
+        <h1 th:text="${region.id == null} ? #{msg.region-form.add} : #{msg.region-form.edit}">
+            Formulario de Región
+        </h1>
+
+        <!-- Mensaje de error general -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Formulario para crear o editar -->
+        <form th:action="${region.id == null} ? @{/regions/insert} : @{/regions/update}"
+              th:object="${region}"
+              method="post"
+              class="mt-3">
+
+            <!-- ID oculto -->
+            <input type="hidden" th:field="*{id}" />
+
+            <!-- Código -->
+            <div class="mb-3">
+                <label for="code"
+                       class="form-label"
+                       th:text="#{msg.region-form.code}">
+                    Código
+                </label>
+
+                <input type="text"
+                       th:field="*{code}"
+                       id="code"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <!-- Errores de validación del código -->
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('code')}"
+                     th:errors="*{code}">
+                </div>
+            </div>
+
+            <!-- Nombre -->
+            <div class="mb-3">
+                <label for="name"
+                       class="form-label"
+                       th:text="#{msg.region-form.name}">
+                    Nombre
+                </label>
+
+                <input type="text"
+                       th:field="*{name}"
+                       id="name"
+                       class="form-control"
+                       th:errorclass="is-invalid" />
+
+                <!-- Errores de validación del nombre -->
+                <div class="invalid-feedback"
+                     th:if="${#fields.hasErrors('name')}"
+                     th:errors="*{name}">
+                </div>
+            </div>
+
+            <!-- Botón traducido: crear o actualizar -->
+            <button type="submit"
+                    class="btn btn-primary"
+                    th:text="${region.id == null} ? #{msg.region-form.create} : #{msg.region-form.update}">
+                Crear
+            </button>
+
+            <!-- Volver al listado -->
+            <a th:href="@{/regions}"
+               class="btn btn-secondary"
+               th:text="#{msg.region-form.returnback}">
+                Volver al listado
+            </a>
+
+        </form>
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>
