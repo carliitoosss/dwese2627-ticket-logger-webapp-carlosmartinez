@@ -50,6 +50,12 @@
                     <td th:text="${region.name}"></td>
 
                     <td>
+                        <!-- Ver región -->
+                        <a th:href="@{/regions/detail(id=${region.id})}"
+                           class="btn btn-outline-secondary btn-sm me-1"
+                           th:text="#{msg.region-list.viewDetail}">
+
+                        </a>
                         <!-- Editar región -->
                         <a th:href="@{/regions/edit(id=${region.id})}"
                            class="btn btn-primary btn-sm"
