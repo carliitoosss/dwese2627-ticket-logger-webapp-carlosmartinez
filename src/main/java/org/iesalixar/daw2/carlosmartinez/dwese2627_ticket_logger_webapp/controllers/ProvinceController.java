@@ -4,8 +4,14 @@ package org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.control
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.daos.ProvinceDAO;
 import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.daos.RegionDAO;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.dtos.ProvinceCreateDTO;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.dtos.ProvinceDTO;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.dtos.ProvinceUpdateDTO;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.dtos.RegionDTO;
 import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.entities.Province;
 import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.entities.Region;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.mappers.ProvinceMapper;
+import org.iesalixar.daw2.carlosmartinez.dwese2627_ticket_logger_webapp.mappers.RegionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,15 +57,14 @@ public class ProvinceController {
         logger.info("Solicitando el listado de provincias.");
 
         try {
-            List<Province> listProvinces =
-                    provinceDAO.listAllProvinces();
-
+            List<Province> listProvinces = provinceDAO.listAllProvinces();
+            List<ProvinceDTO> listProvincesDTOs = ProvinceMapper.toDTOList(listProvinces);
+            logger.info("Se han cargado {} provincias.", listProvincesDTOs.size());
             model.addAttribute("listProvinces", listProvinces);
 
         } catch (Exception e) {
 
-            logger.error("Error al listar las provincias: {}",
-                    e.getMessage());
+            logger.error("Error al listar las provincias: {}", e.getMessage());
 
             String errorMessage = messageSource.getMessage(
                     "msg.province-controller.list.error",
@@ -77,21 +82,59 @@ public class ProvinceController {
      * Muestra el formulario de creación de provincias.
      */
     @GetMapping("/new")
-    public String showNewForm(
-            Model model,
-            RedirectAttributes redirectAttributes) {
+    public String showNewForm(Model model, Locale locale) {
 
         logger.info("Mostrando formulario de nueva provincia.");
 
         try {
-
-            model.addAttribute("province", new Province());
-
             List<Region> listRegions = regionDAO.listAllRegions();
-            model.addAttribute("listRegions", listRegions);
+            List<RegionDTO> listRegionsDTOs = RegionMapper.toDTOList(listRegions);
+            model.addAttribute("province", new ProvinceCreateDTO());
+            model.addAttribute("listRegions", listRegionsDTOs);
+        } catch (Exception e) {
 
-            return "views/province/province-form";
+            logger.error("Error al cargar las regiones para el formulario de province: {}",
+                    e.getMessage());
 
+            String errorMessage= messageSource.getMessage("msg.province-controller.edit.error", null, locale);
+            model.addAttribute("errorMessage", errorMessage);
+        }
+        return "views/province/province-form";
+    }
+
+    /**
+     * Inserta una nueva provincia tras validar sus datos.
+     * @param provinceDTO objeto con los datos del formulario.
+     * @param result Resultado de validacion.
+     * @param redirectAttributes Atributos para mensajes flash.
+     * @param locale Configuración regional actual para mensajes,
+     * @return Redireccion al listado de provincias.
+     */
+    @PostMapping("/insert")
+    public String insertProvince(
+            @Valid @ModelAttribute("province") ProvinceCreateDTO provinceDTO,
+            BindingResult result,
+            RedirectAttributes redirectAttributes,
+            Model model,
+            Locale locale) {
+
+        logger.info("Intentando insertar provincia con código {}", provinceDTO.getCode());
+
+        try {
+            if (result.hasErrors()) {
+                List<Region> listRegions = RegionDAO.listAllRegions();
+                List<RegionDTO> listRegionsDTOs = RegionMapper.toDTOList(listRegions);
+                model.addAttribute("listRegions", listRegionsDTOs);
+                return "views/province/province-form";
+            }
+            if(provinceDAO.existsProvinceByCode(provinceDTO.getCode())){
+                logger.warn("El codigo de la provincia {} ya existe. ", provinceDTO.getCode());
+                String errorMessage = messageSource.getMessage("msg.province-controller.insert.codeExist", null, locale);
+                redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+                return "redirect:/provinces/new";
+            }
+            Province province = ProvinceMapper.toEntity(provinceDTO);
+            provinceDAO.insertProvince(province);
         } catch (Exception e) {
 
             logger.error("Error al cargar las regiones: {}",
@@ -104,47 +147,7 @@ public class ProvinceController {
 
             return "redirect:/provinces";
         }
-    }
 
-    /**
-     * Inserta una nueva provincia tras validar sus datos.
-     */
-    @PostMapping("/insert")
-    public String insertProvince(
-            @Valid @ModelAttribute("province") Province province,
-            BindingResult bindingResult,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-
-        logger.info("Intentando insertar provincia con código {}",
-                province.getCode());
-
-        if (bindingResult.hasErrors()) {
-
-            logger.warn("Errores de validación al insertar la provincia.");
-
-            try {
-
-                model.addAttribute(
-                        "listRegions",
-                        regionDAO.listAllRegions()
-                );
-
-                return "views/province/province-form";
-
-            } catch (Exception e) {
-
-                logger.error("Error al cargar las regiones: {}",
-                        e.getMessage());
-
-                redirectAttributes.addFlashAttribute(
-                        "errorMessage",
-                        "Error al cargar las comunidades autónomas."
-                );
-
-                return "redirect:/provinces";
-            }
-        }
 
         try {
 
@@ -183,39 +186,39 @@ public class ProvinceController {
 
     /**
      * Muestra el formulario de edición de provincias.
+     *
+     * @param id ID de la provincia a editar.
+     * @param model modelo para pasar datos a la vista.
+     * @return plantilla thymeleaf para el formulario.
      */
     @GetMapping("/edit")
     public String showEditForm(
             @RequestParam("id") Long id,
             Model model,
-            RedirectAttributes redirectAttributes) {
+            Locale locale) {
 
-        logger.info("Mostrando formulario de edición de provincia con ID {}",
-                id);
+        logger.info("Mostrando formulario de edición de provincia con ID {}", id);
 
         try {
-
             Province province = provinceDAO.getProvinceById(id);
-
-            model.addAttribute("province", province);
-
-            List<Region> listRegions = regionDAO.listAllRegions();
-            model.addAttribute("listRegions", listRegions);
-
-            return "views/province/province-form";
-
+            ProvinceUpdateDTO provinceDTO=ProvinceMapper.toUpdateDTO(province);
+            if(province==null){
+                logger.warn("No se encontro la provincia con ID: {}", id);
+                String errorMessage= messageSource.getMessage("msg.province-controller.edit.notfound", null, locale);
+                model.addAttribute("errorMessage", errorMessage);
+            }else{
+                List<Region> listRegions = regionDAO.listAllRegions();
+                List<RegionDTO> listRegionsDTOs=RegionMapper.toDTOList(listRegions);
+                model.addAttribute("province", provinceDTO);
+                model.addAttribute("listRegions", listRegionsDTOs);
+            }
         } catch (Exception e) {
 
-            logger.error("Error al cargar la provincia con ID {}: {}",
-                    id, e.getMessage());
-
-            redirectAttributes.addFlashAttribute(
-                    "errorMessage",
-                    "Error al cargar la provincia."
-            );
-
-            return "redirect:/provinces";
+            logger.error("Error al cargar la provincia con ID {}: {}", id, e.getMessage());
+            String errorMessage=messageSource.getMessage("msg.province-controller.edit.form",null,locale);
+            model.addAttribute("errorMessage", errorMessage);
         }
+        return "views/province/province-form";
     }
 
     /**
@@ -327,5 +330,59 @@ public class ProvinceController {
         }
 
         return "redirect:/provinces";
+    }
+
+    /**
+     * Muestra el detalle de una provincia concreta.
+     *
+     * @param id Identificador de la provincia.
+     * @param model Modelo para pasar los datos a la vista.
+     * @param redirectAttributes Atributos para mensajes de redirección.
+     * @param locale Idioma actual.
+     * @return Nombre de la plantilla o redirección.
+     */
+    @GetMapping("/detail")
+    public String detail(@RequestParam("id") Long id,
+                         Model model,
+                         RedirectAttributes redirectAttributes,
+                         Locale locale) {
+
+        logger.info("Mostrando detalle de la provincia con ID {}", id);
+
+        try {
+            Province province = provinceDAO.getProvinceById(id);
+
+            if (province == null) {
+                logger.warn("Provincia con ID {} no encontrada", id);
+
+                redirectAttributes.addFlashAttribute(
+                        "errorMessage",
+                        messageSource.getMessage(
+                                "msg.province-controller.detail.notFound",
+                                null,
+                                locale
+                        )
+                );
+
+                return "redirect:/provinces";
+            }
+
+            model.addAttribute("province", province);
+            return "views/province/province-detail";
+
+        } catch (Exception e) {
+            logger.error("Error al obtener el detalle de la provincia con ID {}", id, e);
+
+            redirectAttributes.addFlashAttribute(
+                    "errorMessage",
+                    messageSource.getMessage(
+                            "msg.province-controller.detail.error",
+                            null,
+                            locale
+                    )
+            );
+
+            return "redirect:/provinces";
+        }
     }
 }

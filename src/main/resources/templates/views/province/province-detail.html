@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments/head :: head('Ticket Logger - Detalle de Provincia')}"></head>
+
+<body class="d-flex flex-column min-vh-100">
+
+<!-- Cabecera -->
+<header th:replace="~{fragments/header :: header}"></header>
+
+<!-- Contenido principal -->
+<main class="list-page content-wrapper">
+    <div class="list-card">
+
+        <!-- Título traducido -->
+        <h1 th:text="#{msg.province-detail.title}">
+            Detalle de la Provincia
+        </h1>
+
+        <!-- Mensaje de error -->
+        <div th:if="${errorMessage}"
+             class="alert alert-danger"
+             th:text="${errorMessage}">
+        </div>
+
+        <!-- Datos de la provincia -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5 mb-0"
+                    th:text="#{msg.province-detail.section.provinceData}">
+                    Datos de la Provincia
+                </h2>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <tbody>
+                    <tr>
+                        <th th:text="#{msg.province-detail.field.id}">
+                            ID
+                        </th>
+                        <td th:text="${province.id}"></td>
+                    </tr>
+
+                    <tr>
+                        <th th:text="#{msg.province-detail.field.code}">
+                            Código
+                        </th>
+                        <td th:text="${province.code}"></td>
+                    </tr>
+
+                    <tr>
+                        <th th:text="#{msg.province-detail.field.name}">
+                            Nombre
+                        </th>
+                        <td th:text="${province.name}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Comunidad Autónoma asociada -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2 class="h5 mb-0"
+                    th:text="#{msg.province-detail.section.region}">
+                    Región
+                </h2>
+            </div>
+
+            <div class="card-body">
+
+                <!-- Mensaje si no existe región asociada -->
+                <div th:if="${province.region == null}"
+                     class="alert alert-info"
+                     th:text="#{msg.province-detail.region.empty}">
+                    Esta provincia no tiene región asociada.
+                </div>
+
+                <!-- Datos de la región -->
+                <div th:if="${province.region != null}">
+
+                    <table class="table table-bordered">
+                        <tbody>
+                        <tr>
+                            <th th:text="#{msg.province-detail.region.field.id}">
+                                ID
+                            </th>
+                            <td th:text="${province.region.id}"></td>
+                        </tr>
+
+                        <tr>
+                            <th th:text="#{msg.province-detail.region.field.code}">
+                                Código
+                            </th>
+                            <td th:text="${province.region.code}"></td>
+                        </tr>
+
+                        <tr>
+                            <th th:text="#{msg.province-detail.region.field.name}">
+                                Nombre
+                            </th>
+                            <td th:text="${province.region.name}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- Ver detalle de la región -->
+                    <a th:href="@{/regions/detail(id=${province.region.id})}"
+                       class="btn btn-outline-secondary btn-sm"
+                       th:text="#{msg.province-detail.region.viewDetail}"
+                       th:title="#{msg.province-detail.region.viewDetail.title(${province.region.name})}">
+                        Ver detalle de la región
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Volver al listado de provincias -->
+        <a th:href="@{/provinces}"
+           class="btn btn-secondary"
+           th:text="#{msg.province-detail.action.back}">
+            Volver al listado
+        </a>
+
+    </div>
+</main>
+
+<!-- Pie de página -->
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- JavaScript -->
+<div th:replace="~{fragments/scripts :: scripts}"></div>
+
+</body>
+</html>

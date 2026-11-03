@@ -60,6 +60,14 @@
                     <td th:text="${province.region != null ? province.region.name : ''}"></td>
 
                     <td>
+
+                        <!-- Ver detalle de la provincia -->
+                        <a th:href="@{/provinces/detail(id=${province.id})}"
+                           class="btn btn-outline-secondary btn-sm me-1"
+                           th:text="#{msg.province-list.viewDetail}">
+                            Ver Detalle
+                        </a>
+
                         <!-- Editar provincia -->
                         <a th:href="@{/provinces/edit(id=${province.id})}"
                            class="btn btn-primary btn-sm"

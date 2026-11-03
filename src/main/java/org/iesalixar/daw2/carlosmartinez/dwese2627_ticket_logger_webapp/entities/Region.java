@@ -23,13 +23,9 @@ public class Region {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "{msg.region.code.notEmpty}")
-    @Size(max = 2, message = "{msg.region.code.size}")
     @Column(name = "code",nullable = false,length = 2)
     private String code;
 
-    @NotEmpty(message = "{msg.region.name.notEmpty}")
-    @Size(max = 100, message = "{msg.region.name.size}")
     @Column(name = "name",nullable = false,length = 100)
     private String name;
 

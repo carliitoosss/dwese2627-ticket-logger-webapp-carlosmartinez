@@ -29,19 +29,14 @@ public class Province {
     private Long id;
 
     // Código de la provincia.
-    @NotEmpty(message = "{msg.province.code.notEmpty}")
-    @Size(max = 10, message = "{msg.province.code.size}")
     @Column(name = "code", nullable = false,length = 2)
     private String code;
 
     // Nombre de la provincia.
-    @NotEmpty(message = "{msg.province.name.notEmpty}")
-    @Size(max = 100, message = "{msg.province.name.size}")
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
     // Comunidad autónoma a la que pertenece la provincia.
-    @NotNull(message = "{msg.province.region.NotNull}")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id",nullable = false)
     private Region region;
